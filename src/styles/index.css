@@ -43,6 +43,9 @@ ul li {
     display: flex;
     align-items: center;
 }
+.close{
+    border: none;
+}
 @media (max-width: 768px) {
     .edit-delete-icons {
         margin-left: 15px; 
