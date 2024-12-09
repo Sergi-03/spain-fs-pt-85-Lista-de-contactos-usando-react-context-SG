@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
-const AddContact = () => {
+const EditContact = () => {
+    const { id } = useParams(); 
+    const navigate = useNavigate();
+
     const [contact, setContact] = useState({
         name: '',
         phone: '',
@@ -10,7 +13,12 @@ const AddContact = () => {
         address: ''
     });
 
-    const navigate = useNavigate();
+    useEffect(() => {
+        fetch(`https://playground.4geeks.com/contact/agendas/sergi/contacts/${id}`)
+            .then((response) => response.json())
+            .then((data) => setContact(data))
+            .catch((error) => console.log(error));
+    }, [id]);
 
     const handleChange = (e) => {
         setContact({
@@ -21,28 +29,28 @@ const AddContact = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        createContact(contact);
-        navigate('/');  
+        editContact(id, contact);
     };
 
-    const createContact = (payload) => {
-        fetch("https://playground.4geeks.com/contact/agendas/sergi/contacts", {
-            method: "POST",
+    const editContact = (id, updatedContact) => {
+        fetch(`https://playground.4geeks.com/contact/agendas/sergi/contacts/${id}`, {
+            method: "PUT",
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(payload),
+            body: JSON.stringify(updatedContact)
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log("Contact created:", data);
+                console.log("Contact updated:", data);
+                navigate('/');  
             })
             .catch((error) => console.log(error));
     };
 
     return (
         <div className="container">
-            <h2 className="my-4 text-center">Add a new contact</h2>
+            <h2 className="my-4 text-center">Edit Contact</h2>
             <form onSubmit={handleSubmit} className="shadow p-4 rounded bg-light">
                 <div className="form-group mb-3">
                     <label htmlFor="name">Full Name</label>
@@ -53,12 +61,10 @@ const AddContact = () => {
                         value={contact.name} 
                         onChange={handleChange} 
                         className="form-control" 
-                        placeholder="Enter contact name"
-                        required 
                     />
                 </div>
                 <div className="form-group mb-3">
-                    <label htmlFor="phone">Phone</label>
+                    <label htmlFor="phone">Address</label>
                     <input 
                         id="phone"
                         type="text" 
@@ -66,8 +72,6 @@ const AddContact = () => {
                         value={contact.phone} 
                         onChange={handleChange} 
                         className="form-control" 
-                        placeholder="Enter phone number"
-                        required 
                     />
                 </div>
                 <div className="form-group mb-3">
@@ -79,8 +83,6 @@ const AddContact = () => {
                         value={contact.email} 
                         onChange={handleChange} 
                         className="form-control" 
-                        placeholder="Enter email"
-                        required 
                     />
                 </div>
                 <div className="form-group mb-3">
@@ -92,14 +94,12 @@ const AddContact = () => {
                         value={contact.address} 
                         onChange={handleChange} 
                         className="form-control" 
-                        placeholder="Enter address"
-                        required 
                     />
                 </div>
                 <div className="form-group d-flex justify-content-between">
-                    <button type="submit" className="btn btn-primary">Save</button>
+                    <button type="submit" className="btn btn-primary">Save Changes</button>
                     <Link to="/">
-                    <button type="button" class="btn btn-link">Go back</button>
+                    <button type="button" class="btn btn-secondary">Go back</button>
                     </Link>
                 </div>
             </form>
@@ -107,4 +107,4 @@ const AddContact = () => {
     );
 };
 
-export default AddContact;
+export default EditContact;

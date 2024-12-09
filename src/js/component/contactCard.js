@@ -2,15 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export const ContactCard = () => {
-    const [contacts, setContacts] = useState([
-        {
-            id: 1, 
-            name: "Sergi", 
-            phone: "123456789", 
-            email: "sergi@example.com", 
-            address: "123 Main St"
-        }
-    ]);
+    const [contacts, setContacts] = useState([]);
 
     async function createAgenda() {
         try {
@@ -26,44 +18,45 @@ export const ContactCard = () => {
         }
     }
 
-    async function createContact() {
+    async function getContacts() {
         try {
             let response = await fetch("https://playground.4geeks.com/contact/agendas/sergi/contacts", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(contacts) 
+                method: "GET"
             });
 
-            console.log(response);
-            if (response.ok) console.log("Contact created!");
-            let data = await response.json();
-            console.log(data);
+            if (response.status == 404) {
+                createAgenda();  
+            }
+
+            if (response.ok) {
+                let data = await response.json();
+                setContacts(data.contacts);
+            }
         } catch (error) {
-            console.error("Could not create contact", error);
+            console.error("Could not get contacts", error);
         }
     }
+
     async function deleteContact(id) {
         try {
-            let response = await fetch(`https://playground.4geeks.com/contact/agendas/sergi/contacts/${id}`, {
-                method: "DELETE"
-            });
+            const url = `https://playground.4geeks.com/contact/agendas/sergi/contacts/${id}`;
+            let response = await fetch(url, { method: "DELETE" });
 
             if (response.ok) {
                 console.log(`Contact with id ${id} deleted`);
                 setContacts(contacts.filter(contact => contact.id !== id));
             } else {
-                console.error("Failed to delete contact");
+                const errorMessage = await response.text();
+                console.error("Failed to delete contact", errorMessage);
+                alert(`Error deleting contact: ${errorMessage}`);
             }
         } catch (error) {
-            console.error("Could not delete contact", error);
+            console.error("Error in deleting contact", error);
         }
     }
 
     useEffect(() => {
-        createAgenda();
-        createContact();
+        getContacts();
     }, []);
 
     return (
@@ -85,7 +78,7 @@ export const ContactCard = () => {
                             <li className="contact-item">
                                 {contact.name}
                                 <span className="edit-delete-icons">
-                                    <Link to={`/add`}>
+                                    <Link to={`/edit/${contact.id}`}>
                                         <i className="fa-solid fa-pen"></i>
                                     </Link>
                                     <i
@@ -94,16 +87,9 @@ export const ContactCard = () => {
                                     ></i>
                                 </span>
                             </li>
-
-                            <li>
-                                <i className="fa-solid fa-location-dot"></i><span>{contact.address}</span>
-                            </li>
-                            <li>
-                                <i className="fa-solid fa-phone"></i><span>{contact.phone}</span>
-                            </li>
-                            <li>
-                                <i className="fa-solid fa-envelope"></i><span>{contact.email}</span>
-                            </li>
+                            <li><i className="fa-solid fa-location-dot"></i><span>{contact.address}</span></li>
+                            <li><i className="fa-solid fa-phone"></i><span>{contact.phone}</span></li>
+                            <li><i className="fa-solid fa-envelope"></i><span>{contact.email}</span></li>
                         </ul>
                     </div>
                 </div>
