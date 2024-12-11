@@ -7,14 +7,24 @@ const EditContact = () => {
 	const { id } = useParams(); 
 	const navigate = useNavigate();
 	const [contact, setContact] = useState({ name: '', phone: '', email: '', address: '' });
-	const { actions } = useContext(Context);
+	const { actions, store } = useContext(Context);
 
-	useEffect(() => {
-		fetch(`https://playground.4geeks.com/contact/agendas/sergi/contacts/${id}`)
-			.then((response) => response.json())
-			.then((data) => setContact(data))
-			.catch((error) => console.log(error));
-	}, [id]);
+     useEffect(() => {
+        if (store.contacts.length === 0) {
+            actions.getContacts(); 
+        }
+    }, [store.contacts, actions]);
+
+    useEffect(() => {
+        if (store.contacts.length > 0) {
+            const selectedContact = store.contacts.find(c => String(c.id) === String(id));
+            if (selectedContact) {
+                setContact(selectedContact); 
+            } else {
+                console.log("Contacto no encontrado con id:", id);
+            }
+        }
+    }, [id, store.contacts]);
 
 	const handleChange = (e) => {
 		setContact({ ...contact, [e.target.name]: e.target.value });
