@@ -26,6 +26,24 @@ Este proyecto utiliza las siguientes tecnologías:
 4. Los contactos se pueden eliminar de la lista haciendo clic en un botón de eliminación.
 5. La lista de contactos se actualiza en tiempo real cada vez que se agrega, edita o elimina un contacto.
 
+## Uso
+
+### 1. Clona el repositorio
+```bash
+git clone https://github.com/Sergi-03/spain-fs-pt-85-Lista-de-contactos-usando-react-context-SG.git
+cd spain-fs-pt-85-Lista-de-contactos-usando-react-context-SG
+```
+
+### 2. Instala dependencias
+```bash
+npm install
+```
+
+### 3. Inicia la aplicación
+```bash
+npm start
+```
+
 
 ## Contacto
 
